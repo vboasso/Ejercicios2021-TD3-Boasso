@@ -6,7 +6,7 @@
 
 void app_main() {
 
-    ConfigurarLed(1,2,3); //Pin donde se conectarán los leds
+    ConfigurarLed(); //Pin donde se conectarán los leds
     IniciarSemaforo();
 
     while (1)
