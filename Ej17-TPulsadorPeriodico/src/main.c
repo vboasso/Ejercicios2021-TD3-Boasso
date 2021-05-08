@@ -64,7 +64,7 @@ void TareaDestellar( void* taskParmPtr )
     {
         duty = tpulsado;
 
-        if ( duty > MAX_INC )
+        if ( duty > TICKSMAX )
         {
             duty = 0;
             printf("El tiempo pulsado es mayor al ciclo de trabajo \n");
@@ -96,11 +96,12 @@ void TareaPulsador( void* taskParmPtr )
             conteoTicksInicio = xTaskGetTickCount();
             while (gpio_get_level(PULSADOR1)==1)
             {
-                /* code */
+                /* Espero a que el pulsador sea soltado */
             }
             conteoTicksFinal = xTaskGetTickCount();
         }
-        duty= conteoTicksFinal-conteoTicksInicio;
+        duty= conteoTicksFinal-conteoTicksInicio; //calculo el dutycicle en ticks
+        
 
        
     }
