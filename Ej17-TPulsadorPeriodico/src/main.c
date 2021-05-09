@@ -1,7 +1,8 @@
 #include "main.h"
 
 //Variables globales
-uint16_t tpulsado = 0;
+int checkup=0;
+int checkdown=0;
 uint16_t duty = 0;
 TickType_t conteoTicksInicio = 0;
 TickType_t conteoTicksFinal = 0;
@@ -62,7 +63,7 @@ void TareaDestellar( void* taskParmPtr )
     // ---------- Bucle infinito --------------------------
     while( true )
     {
-        duty = tpulsado;
+        //duty = tpulsado;
 
         if ( duty > TICKSMAX )
         {
@@ -88,20 +89,53 @@ void TareaPulsador( void* taskParmPtr )
     // ---------- Configuraciones ------------------------------
     gpio_pad_select_gpio(PULSADOR1);
     gpio_set_direction(PULSADOR1, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(PULSADOR1, GPIO_PULLDOWN_ONLY);
 
     while( true )
     {
-        if(gpio_get_level(PULSADOR1)==1)
-        {
-            conteoTicksInicio = xTaskGetTickCount();
-            while (gpio_get_level(PULSADOR1)==1)
+        switch (estadoActual) {
+		    case ESTADO_ESPERA:
             {
-                /* Espero a que el pulsador sea soltado */
-            }
-            conteoTicksFinal = xTaskGetTickCount();
-        }
-        duty= conteoTicksFinal-conteoTicksInicio; //calculo el dutycicle en ticks
-        
+			    if(gpio_get_level(PULSADOR1)==1)
+                {
+				 estadoActual = ESTADO_PULSADO;
+			    }
+		    }
+		    break;
+		    case ESTADO_PULSADO:{
+                if(checkup >= TW)
+                {
+		    	    conteoTicksInicio = xTaskGetTickCount();
+                    estadoActual = ESTADO_ALTO;
+                    checkup = 0;
+                }
+                else
+                {
+                    estadoActual = ESTADO_ESPERA;
+                    checkup++;
+                }
+		    }
+		    break;
+		    case ESTADO_ALTO:{
+		    	if(gpio_get_level(PULSADOR1)==0)
+                {
+                    if(checkdown >= TW)
+                    {
+                        conteoTicksFinal = xTaskGetTickCount();
+                        duty = conteoTicksFinal-conteoTicksInicio;
+                        estadoActual = ESTADO_ESPERA;
+                        checkdown = 0;
+                    }
+                    checkdown++;
+                }
+		    }
+		    break;
+		    default:{
+		    	//Si cae en un estado no valido, reinicio
+		    	estadoActual = ESTADO_ESPERA;
+		    }
+		    break;
+	}
 
        
     }

@@ -11,9 +11,19 @@
 #define PERIODO     pdMS_TO_TICKS(PERIODO_MS)
 #define PROCESADORA 0
 #define PROCESADORB 1
-//#define INCREMENTO  100
 #define TICKSMAX    (PERIODO)
+#define TW          5
 
 void TareaDestellar( void* taskParmPtr ); //Prototipo de la función de la tarea
 
 void TareaPulsador( void* taskParmPtr ); //Prototipo de la función de la tarea
+
+typedef enum
+{
+    ESTADO_ESPERA,
+    ESTADO_PULSADO,
+    ESTADO_ALTO,
+} estadoMEF_t;
+
+// Variable de estado (global)
+estadoMEF_t estadoActual;
