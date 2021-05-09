@@ -12,6 +12,7 @@
 #define PROCESADORA 0
 #define PROCESADORB 1
 #define TICKSMAX    (PERIODO)
+#define TW          5
 
 void TareaDestellar( void* taskParmPtr ); //Prototipo de la función de la tarea
 

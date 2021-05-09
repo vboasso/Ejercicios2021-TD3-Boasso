@@ -1,7 +1,8 @@
 #include "main.h"
 
 //Variables globales
-//uint16_t tpulsado = 0;
+int checkup=0;
+int checkdown=0;
 uint16_t duty = 0;
 TickType_t conteoTicksInicio = 0;
 TickType_t conteoTicksFinal = 0;
@@ -102,17 +103,30 @@ void TareaPulsador( void* taskParmPtr )
 		    }
 		    break;
 		    case ESTADO_PULSADO:{
-		    	conteoTicksInicio = xTaskGetTickCount();
-                estadoActual = ESTADO_ALTO;
-
+                if(checkup >= TW)
+                {
+		    	    conteoTicksInicio = xTaskGetTickCount();
+                    estadoActual = ESTADO_ALTO;
+                    checkup = 0;
+                }
+                else
+                {
+                    estadoActual = ESTADO_ESPERA;
+                    checkup++;
+                }
 		    }
 		    break;
 		    case ESTADO_ALTO:{
 		    	if(gpio_get_level(PULSADOR1)==0)
                 {
-                    conteoTicksFinal = xTaskGetTickCount();
-                    duty = conteoTicksFinal-conteoTicksInicio;
-                    estadoActual = ESTADO_ESPERA;
+                    if(checkdown >= TW)
+                    {
+                        conteoTicksFinal = xTaskGetTickCount();
+                        duty = conteoTicksFinal-conteoTicksInicio;
+                        estadoActual = ESTADO_ESPERA;
+                        checkdown = 0;
+                    }
+                    checkdown++;
                 }
 		    }
 		    break;
