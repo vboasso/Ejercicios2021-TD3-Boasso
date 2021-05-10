@@ -6,12 +6,11 @@
 
 #define T_REBOTE_MS   40
 #define T_REBOTE pdMS_TO_TICKS(T_REBOTE_MS)
-#define SALIDA_PRUEBA   GPIO_NUM_26
+//#define SALIDA_PRUEBA   GPIO_NUM_26
 
 /*==================[Prototipos de funciones]======================*/
 
 static void errorPulsador( void );
-static void botonPresionado( void );
 static void botonLiberado( void );
 
 void tareaPulsador( void* taskParmPtr );
@@ -41,17 +40,11 @@ void inicializarPulsador( void )
 {
     pulsadorA.tecla             = pulsadorPines[0];
     pulsadorA.estado            = ALTO;                     //Estado inicial
-    //pulsadorA.tiempoBajo        = TIEMPO_NO_VALIDO;
-    //pulsadorA.tiempoAlto        = TIEMPO_NO_VALIDO;
-    //pulsadorA.diferenciaTiempo  = TIEMPO_NO_VALIDO;
 
     gpio_pad_select_gpio(pulsadorA.tecla);
     gpio_set_direction(pulsadorA.tecla , GPIO_MODE_INPUT);
     gpio_set_pull_mode(pulsadorA.tecla, GPIO_PULLDOWN_ONLY); //Habilita resistencia de PULLDOWN interna
 
-    gpio_pad_select_gpio(SALIDA_PRUEBA);
-    gpio_set_direction(SALIDA_PRUEBA, GPIO_MODE_OUTPUT);
- 
     // Crear tareas en freeRTOS
     BaseType_t res = xTaskCreatePinnedToCore(
     	tareaPulsador,                     	// Funcion de la tarea a ejecutar
@@ -88,10 +81,9 @@ void actualizarPulsador()
             break;
 
         case ASCENDENTE:
-            if( gpio_get_level( pulsadorA.tecla ) ){
-                pulsadorA.estado = ALTO;
-                botonPresionado();
-            }
+            if( gpio_get_level( pulsadorA.tecla ) ){    //En éste caso lo que me interesa es el momento 
+                pulsadorA.estado = ALTO;                //en que se libera el pulsador y no cuando se
+            }                                           //presiona ni durante cuanto.
             else{
                 pulsadorA.estado = BAJO;
             }
@@ -119,22 +111,12 @@ void actualizarPulsador()
     }
 }
 
-/* accion de el evento de tecla pulsada */
-static void botonPresionado()
-{
-    //TickType_t conteoTicksActuales = xTaskGetTickCount();   //Medimos el tiempo en ticks desde que inició el scheduler
-    gpio_set_level( SALIDA_PRUEBA, 1 );         //para tener una referencia en el debug
-    //pulsadorA.tiempoBajo = conteoTicksActuales;             //guardamos ese tiempo como referencia
-}
+
 
 /* accion de el evento de tecla liberada */
 static void botonLiberado()
 {
-    //TickType_t conteoTicksActuales = xTaskGetTickCount();   //Medimos el tiempo en ticks desde que inició el scheduler
-    gpio_set_level( SALIDA_PRUEBA, 0 );         //para tener una referencia en el debug
-    //pulsadorA.tiempoAlto    = conteoTicksActuales;
-    //pulsadorA.diferenciaTiempo  = pulsadorA.tiempoAlto - pulsadorA.tiempoBajo; //Da el tiempo que el pulsador estuvo en estado alto
-    xSemaphoreGive( semaforo );
+    xSemaphoreGive( semaforo );             //Libero "la bandera" del semáforo
 }
 
 void tareaPulsador( void* taskParmPtr )

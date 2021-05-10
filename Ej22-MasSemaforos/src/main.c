@@ -17,7 +17,8 @@
 #define LED_ON       pdMS_TO_TICKS(LED_ON_MS)
 
 void tareaDestello( void* taskParmPtr ); //Prototipo de la función de la tarea
-
+TickType_t xLastWakeTime = 0;
+TickType_t sinc = pdMS_TO_TICKS(500);//Me sincroniza el final del pulso del led verde con el inicio del rojo
 SemaphoreHandle_t semaforo = NULL; //Puntero al semaforo
 
 void app_main()
@@ -66,15 +67,18 @@ void tareaDestello( void* taskParmPtr )
     {
         if(xSemaphoreTake( semaforo , LED_ON)==pdTRUE)
         {
-        gpio_set_level( SALIDA1, 1 );
-        vTaskDelay( LED_ON );
-        gpio_set_level( SALIDA1, 0 );
+            vTaskDelayUntil(&xLastWakeTime , sinc);             //Lo uso para sincronizar la entrada 500ms luego del flanco descendente 
+            gpio_set_level( SALIDA1, 1 );
+            vTaskDelay( LED_ON );
+            gpio_set_level( SALIDA1, 0 );
         }
         else
         {
             gpio_set_level( SALIDA2, 1 );
             vTaskDelay( LED_ON );
             gpio_set_level( SALIDA2, 0 );
+            xLastWakeTime = xTaskGetTickCount(); //Tomo el momento (en tick) del flanco descendente
+
         }
     }
 }
