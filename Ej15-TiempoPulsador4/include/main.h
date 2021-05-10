@@ -8,14 +8,17 @@
 #define LED1        GPIO_NUM_25
 #define PULSADOR1   GPIO_NUM_14
 #define PROCESADORA 0
+#define PROCESADORB 1
 #define TW          5
 
 //Prototipos de funciones
-void TareaPulsador( void* taskParmPtr ); 
+void TareaPulsador( void* taskParmPtr );
+void TareaSalida( void* taskParmPtr ); 
 void InicializarIOs();
-void ActualizarIOs();
+void ActualizarIO();
 void PrenderSalida();
 void BorrarTarea();
+void CrearTareaSalida();
 
 
 typedef enum
