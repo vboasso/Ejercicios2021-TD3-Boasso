@@ -43,7 +43,7 @@ void ActualizarIOs()
             configMINIMAL_STACK_SIZE, 		// Cantidad de stack de la tarea
             NULL,                          	// Parametros de tarea
             tskIDLE_PRIORITY+1,         	// Prioridad de la tarea -> Queremos que este un nivel encima de IDLE
-            TaskPulsador,                          		// Puntero a la tarea creada en el sistema
+            xHandle1,                          		// Puntero a la tarea creada en el sistema
             PROCESADORA
       );
       if(res == pdFAIL)
@@ -120,5 +120,5 @@ void PrenderSalida()
 
 void BorrarTarea()
 {
-    vTaskDelete(TaskPulsador);
+    vTaskDelete(xHandle1);
 }

@@ -27,3 +27,4 @@ typedef enum
 
 // Variable de estado (global)
 estadoMEF_t estadoActual;
+TaskHandle_t xHandle1 = NULL; 
