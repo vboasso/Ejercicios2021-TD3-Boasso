@@ -9,7 +9,6 @@ TickType_t conteoTicksFinal = 0;
 
 
 void app_main() {
-
     // Crear tarea en freeRTOS
     // Devuelve pdPASS si la tarea fue creada y agregada a la lista ready
     // En caso contrario devuelve pdFAIL.
@@ -63,7 +62,7 @@ void TareaDestellar( void* taskParmPtr )
     // ---------- Bucle infinito --------------------------
     while( true )
     {
-        //duty = tpulsado;
+
 
         if ( duty > TICKSMAX )
         {
@@ -79,8 +78,8 @@ void TareaDestellar( void* taskParmPtr )
         }
         
 
-        // Envia la tarea al estado bloqueado durante xPeriodicity (delay periodico)
-        vTaskDelayUntil( &xLastWakeTime , xPeriodicity );
+        
+        vTaskDelayUntil( &xLastWakeTime , xPeriodicity ); // Envia la tarea al estado bloqueado durante xPeriodicity (delay periodico)
     }
 }
 
@@ -130,9 +129,9 @@ void TareaPulsador( void* taskParmPtr )
                 }
 		    }
 		    break;
-		    default:{
-		    	//Si cae en un estado no valido, reinicio
-		    	estadoActual = ESTADO_ESPERA;
+		    default:
+            {		    	
+		    	estadoActual = ESTADO_ESPERA;//Si cae en un estado no valido, reinicio
 		    }
 		    break;
 	}
