@@ -66,16 +66,15 @@ void TareaDestellar( void* taskParmPtr )
 
         if ( duty > TICKSMAX )
         {
-            duty = 0;
+            duty = 1000;
             printf("El tiempo pulsado es mayor al ciclo de trabajo \n");
         }
 
-        else
-        {
-            gpio_set_level(LED1, 1);
-            vTaskDelay (duty);
-            gpio_set_level(LED1, 0);
-        }
+
+        gpio_set_level(LED1, 1);
+        vTaskDelay (duty);
+        gpio_set_level(LED1, 0);
+        
         
 
         
